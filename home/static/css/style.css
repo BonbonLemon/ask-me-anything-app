@@ -10,6 +10,23 @@ li {
   padding-top: 30px;
 }*/
 
+.errors{
+  color: red;
+  animation-duration: 1500ms;
+  animation-name: blink;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+}
+
+@keyframes blink {
+  from {
+    background-color: #ff9696;
+  }
+  to {
+    background-color: inherit;
+  }
+}
+
 .right-side {
   float: right;
   width: 300px;
