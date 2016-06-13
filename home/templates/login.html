@@ -1,23 +1,5 @@
-{% extends "base.html" %}
+{% extends "account_pages.html" %}
 
-{% block content %}
-  <div class="row">
-    <div class="col-xs-4 col-xs-offset-1">
-      <h1>Log In</h1>
-      
-      <form action="/login/" method="POST"> {% csrf_token %}
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" class="form-control" name="username" value="{{ email }}" />
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" class="form-control" name="password" />
-        </div>
-
-        <input type="submit" name="login" value="Log In" />
-      </form>
-    </div>
-  </div>
+{% block header %}
+  <h1>Log In</h1>
 {% endblock %}

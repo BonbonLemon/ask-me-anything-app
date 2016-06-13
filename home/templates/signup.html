@@ -1,5 +1,5 @@
-<form method="POST" action="/login/"> {% csrf_token %}
-  <input type="text" name="username" placeholder="Username" value="{{ email }}" />
-  <input type="password" name="password" placeholder="Password" />
-  <input type="submit" name="login" class="login login-submit" value="Login">
-</form>
+{% extends "account_pages.html" %}
+
+{% block header %}
+  <h1>Sign Up</h1>
+{% endblock %}

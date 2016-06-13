@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.template import RequestContext
+import pdb
 
 from .models import AMA, Question, Answer
 
@@ -34,6 +35,7 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 def signup(request):
-    if request.method == 'POST':
-        print 'hi'
-    return render(request, 'signup.html')
+    # pdb.set_trace()
+    return render(request, 'signup.html', context_instance=RequestContext(request))
+    # if request.method == 'POST':
+    #     return render(request, 'signup.html')
