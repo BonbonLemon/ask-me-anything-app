@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ ama.title }}</h1>
+  <ul>
+  {% for question in ama.question_set.all %}
+    <li>
+      {{ question.question_text }}
+    </li>
+  {% endfor %}
+  </ul>
+  <a href="{% url 'index' %}">Back to index</a>
+{% endblock %}

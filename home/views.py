@@ -1,10 +1,39 @@
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.contrib import auth
+from django.template import RequestContext
 
 from .models import AMA, Question, Answer
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the home page.")
+    latest_ama_list = AMA.objects.order_by('-pub_date')[:5]
+    context = { 'latest_ama_list': latest_ama_list, }
+    return render(request, 'index.html', context, context_instance=RequestContext(request))
 
 def detail(request, ama_id):
-    return HttpResponse("You're looking at AMA %s." % ama_id)
+    ama = get_object_or_404(AMA, pk=ama_id)
+    return render(request, 'detail.html', {'ama': ama}, context_instance=RequestContext(request))
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, 'login.html', {'email': request.POST.get('username', '')}, context_instance=RequestContext(request))
+    else:
+        return render(request, 'login.html', context_instance=RequestContext(request))
+
+def logout(request):
+    auth.logout(request)
+    print request.user
+    return HttpResponseRedirect('/')
+
+def signup(request):
+    if request.method == 'POST':
+        print 'hi'
+    return render(request, 'signup.html')
