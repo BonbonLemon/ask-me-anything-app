@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import auth
+from django.contrib.auth.models import User
 from django.template import RequestContext
 from django.contrib.auth.forms import UserCreationForm
 import pdb
@@ -32,8 +33,7 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    print request.user
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/login')
 
 def signup(request):
     if request.method == 'POST':
@@ -45,23 +45,11 @@ def signup(request):
             'password2': password
         })
         if form.is_valid():
-            return
+            form.save()
+            user = auth.authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
+            auth.login(request, user)
+            return HttpResponseRedirect('/')
         else:
-            # pdb.set_trace()
             return render(request, 'signup.html', {'errors': form.errors.values() }, context_instance=RequestContext(request))
-
-        # for err in form.errors.values():
-        #     print "The error: %s" % err
-        # user = auth.authenticate(username=username, password=password)
-        # if user is not None:
-        #     auth.login(request, user)
-        #     return HttpResponseRedirect('/')
-        # else:
-        #     return render(request, 'login.html', {'email': request.POST.get('username', '')}, context_instance=RequestContext(request))
     else:
         return render(request, 'signup.html', context_instance=RequestContext(request))
-
-    # pdb.set_trace()
-    return render(request, 'signup.html', context_instance=RequestContext(request))
-    # if request.method == 'POST':
-    #     return render(request, 'signup.html')
