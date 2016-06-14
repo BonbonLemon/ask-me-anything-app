@@ -4,11 +4,10 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.template import RequestContext
 from django.contrib.auth.forms import UserCreationForm
-import pdb
 
 from .models import AMA, Question, Answer
 
-
+# Viewing
 def index(request):
     latest_ama_list = AMA.objects.order_by('-pub_date')[:5]
     context = { 'latest_ama_list': latest_ama_list, }
@@ -18,6 +17,7 @@ def detail(request, ama_id):
     ama = get_object_or_404(AMA, pk=ama_id)
     return render(request, 'detail.html', {'ama': ama}, context_instance=RequestContext(request))
 
+# Accounts
 def login(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
@@ -53,3 +53,8 @@ def signup(request):
             return render(request, 'signup.html', {'errors': form.errors.values() }, context_instance=RequestContext(request))
     else:
         return render(request, 'signup.html', context_instance=RequestContext(request))
+
+# Creation
+def createama(request):
+    import pdb; pdb.set_trace()
+    return render(request, 'create_ama.html', context_instance=RequestContext(request))

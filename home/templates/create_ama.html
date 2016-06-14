@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-5 col-xs-offset-1">
+    <h3>Submit an AMA</h3>
+    <form class="" action="{{ request.path }}" method="POST"> {% csrf_token %}
+      <div class="form-group">
+        <label for="title">Title</label>
+        <textarea name="title" class="form-control" rows="2" cols="40"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea name="description" class="form-control" rows="8" cols="40"></textarea>
+      </div>
+
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+</div>
+{% endblock %}

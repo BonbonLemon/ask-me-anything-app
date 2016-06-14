@@ -12,5 +12,8 @@ urlpatterns = [
     url(r'^logout/$', home.views.logout, name='logout'),
     url(r'^signup/$', home.views.signup, name='signup'),
 
+    # Creation
+    url(r'^create/$', home.views.createama, name='createama'),
+
     url(r'^admin/', admin.site.urls),
 ]
