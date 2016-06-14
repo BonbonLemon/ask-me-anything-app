@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="row">
+  <br/>
+  <a href="{% url 'index' %}">&#8592Back to index</a>
+
   <h1>{{ ama.title }}</h1>
+  <p class="">
+    {{ ama.description_text }}
+  </p>
   <ul>
   {% for question in ama.question_set.all %}
     <li>
@@ -9,5 +16,5 @@
     </li>
   {% endfor %}
   </ul>
-  <a href="{% url 'index' %}">Back to index</a>
+</div>
 {% endblock %}
