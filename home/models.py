@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 class AMA(models.Model):
@@ -10,6 +11,9 @@ class AMA(models.Model):
     pub_date = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return self.title[:20] + " " + str(self.id)
+    def clean(self):
+        if self.title == '':
+            raise ValidationError('Title field can not be empty')
 
 
 class Question(models.Model):

@@ -1,9 +1,12 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
 from django.contrib import auth
-from django.contrib.auth.models import User
-from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.template import RequestContext
+from models import AMA
 
 from .models import AMA, Question, Answer
 
@@ -56,5 +59,18 @@ def signup(request):
 
 # Creation
 def createama(request):
-    import pdb; pdb.set_trace()
-    return render(request, 'create_ama.html', context_instance=RequestContext(request))
+    if request.method == 'POST':
+        author = request.user
+        title = request.POST.get('title')
+        # import pdb; pdb.set_trace()
+        description_text = request.POST.get('description')
+        ama = AMA(author=author, title=title, description_text=description_text)
+        try:
+            ama.clean()
+        except ValidationError as errors:
+            return render(request, 'create_ama.html', {'errors': errors}, context_instance=RequestContext(request))
+        else:
+            ama.save()
+            return HttpResponseRedirect('/')
+    else:
+        return render(request, 'create_ama.html', context_instance=RequestContext(request))

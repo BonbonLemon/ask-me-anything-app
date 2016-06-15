@@ -19,4 +19,14 @@
     </form>
   </div>
 </div>
+
+<br/>
+
+<div class="row">
+  <ul class="col-xs-5 col-xs-offset-1">
+    {% for error in errors%}
+    <li class="errors">{{ error }}</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}
