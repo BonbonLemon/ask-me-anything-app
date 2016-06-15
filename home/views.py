@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
-from models import AMA
+from models import AMA, Question
 
 from .models import AMA, Question, Answer
 
@@ -36,7 +37,7 @@ def login(request):
             if next_path:
                 return HttpResponseRedirect(next_path)
             else:
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect(reverse('index'))
         else:
             return render(request, 'login.html', {'username': username, 'errors': ['Invalid username or password'], 'next': next_path}, context_instance=RequestContext(request))
     else:
@@ -47,7 +48,7 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    return HttpResponseRedirect('/login')
+    return HttpResponseRedirect(reverse('login'))
 
 def signup(request):
     if request.method == 'POST':
@@ -62,7 +63,7 @@ def signup(request):
             form.save()
             user = auth.authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
             auth.login(request, user)
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse('index'))
         else:
             return render(request, 'signup.html', {'errors': form.errors.values() }, context_instance=RequestContext(request))
     else:
@@ -83,6 +84,14 @@ def createama(request):
             return render(request, 'create_ama.html', {'errors': errors}, context_instance=RequestContext(request))
         else:
             ama.save()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse('index'))
     else:
         return render(request, 'create_ama.html', context_instance=RequestContext(request))
+
+def question(request, ama_id):
+    author = request.user
+    ama = AMA.objects.get(id=int(ama_id))
+    question_text = request.POST.get('question')
+    new_question = Question(author=author, ama=ama, question_text=question_text)
+    new_question.save()
+    return HttpResponseRedirect(reverse('detail', args=(int(ama_id),)))

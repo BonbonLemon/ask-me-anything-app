@@ -1,14 +1,10 @@
 body {
-  padding-top: 50px;
+  padding: 50px;
 }
 
 li {
   list-style: none;
 }
-
-/*#content {
-  padding-top: 30px;
-}*/
 
 .errors{
   color: red;
@@ -38,4 +34,16 @@ li {
 
 .right-side button {
   /*margin: 0 auto;*/
+}
+
+textarea.question {
+  width: 500px;
+  height: 100px;
+}
+
+.question-form {
+  width: 600px;
+  background-color: cornsilk;
+  padding: 15px;
+  border: thin solid #f3f3f3;
 }

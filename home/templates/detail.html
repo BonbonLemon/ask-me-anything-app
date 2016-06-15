@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
   <br/>
   <a href="{% url 'index' %}">&#8592Back to index</a>
 
@@ -9,6 +8,21 @@
   <p class="">
     {{ ama.description_text }}
   </p>
+
+  <div class="row">
+    <div class="col-xs-6">
+      <form class="question-form" action="{{ request.path }}question/" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="question">Ask A Question</label>
+          <textarea name="question" class="form-control question" rows="1" cols="1"></textarea>
+        </div>
+
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </div>
+
   <ul>
   {% for question in ama.question_set.all %}
     <li>
@@ -16,5 +30,4 @@
     </li>
   {% endfor %}
   </ul>
-</div>
 {% endblock %}
