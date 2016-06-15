@@ -38,7 +38,7 @@ def login(request):
             else:
                 return HttpResponseRedirect('/')
         else:
-            return render(request, 'login.html', {'email': request.POST.get('username', ''), 'errors': ['Invalid username or password']}, context_instance=RequestContext(request))
+            return render(request, 'login.html', {'username': username, 'errors': ['Invalid username or password'], 'next': next_path}, context_instance=RequestContext(request))
     else:
         context = {}
         if next_path:
