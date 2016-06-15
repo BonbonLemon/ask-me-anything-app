@@ -22,17 +22,28 @@ def detail(request, ama_id):
 
 # Accounts
 def login(request):
+    next_path = ''
+    if request.GET:
+        next_path = request.GET['next']
+
     if request.method == 'POST':
+        # import pdb; pdb.set_trace()
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
-            return HttpResponseRedirect('/')
+            if next_path:
+                return HttpResponseRedirect(next_path)
+            else:
+                return HttpResponseRedirect('/')
         else:
             return render(request, 'login.html', {'email': request.POST.get('username', ''), 'errors': ['Invalid username or password']}, context_instance=RequestContext(request))
     else:
-        return render(request, 'login.html', context_instance=RequestContext(request))
+        context = {}
+        if next_path:
+            context['next'] = next_path
+        return render(request, 'login.html', context, context_instance=RequestContext(request))
 
 def logout(request):
     auth.logout(request)
@@ -58,6 +69,7 @@ def signup(request):
         return render(request, 'signup.html', context_instance=RequestContext(request))
 
 # Creation
+@login_required
 def createama(request):
     if request.method == 'POST':
         author = request.user
