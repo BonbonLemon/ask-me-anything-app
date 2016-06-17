@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <a href="{% url 'index' %}">&#8592Back to index</a>
+
+    <h1>{{ ama.title }}</h1>
+    <p class="">
+      {{ ama.description_text|linebreaksbr }}
+    </p>
+
+    <form class="speech-form" action="{{ request.path }}question/" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="question">Ask A Question</label>
+        <textarea name="question" class="form-control question" rows="1" cols="1"></textarea>
+      </div>
+
+      <div class="form-group">
+        <div class="row">
+          <div class="col-xs-2">
+            <label>Ask as: </label>
+          </div>
+          <div class="col-xs-10">
+            {% if user.username %}
+            <label for="username">
+              <input type="radio" name="author_name" id="username" value="{{ user.username }}" checked />
+              {{ user.username }}
+            </label>
+            <label for="anonymous">
+              <input type="radio" name="author_name" id="anonymous" value="other">
+                Other: <input type="text" name="other" value='Anonymous' />
+              </input>
+            </label>
+            {% else %}
+            <input type="text" name="author_name">
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <input type="submit" value="Submit">
+    </form>
+
+    <ul class="questions-list">
+      {% for question in ama.question_set.all %}
+      <li class="question">
+        <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
+        <div class="question-text">{{ question.question_text|linebreaksbr }}</div>
+        {% if question.ama.author == user %}
+        <a href="{% url 'question_detail' ama.id question.id %}">Answer</a>
+        {% elif user.is_authenticated %}
+        <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

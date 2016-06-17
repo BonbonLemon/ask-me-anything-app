@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
-from models import AMA, Question
+from models import AMA, Question, Answer
 
 from .models import AMA, Question, Answer
 
@@ -15,11 +15,11 @@ from .models import AMA, Question, Answer
 def index(request):
     latest_ama_list = AMA.objects.order_by('-pub_date')[:5]
     context = { 'latest_ama_list': latest_ama_list, }
-    return render(request, 'index.html', context, context_instance=RequestContext(request))
+    return render(request, 'ama/index.html', context, context_instance=RequestContext(request))
 
 def detail(request, ama_id):
     ama = get_object_or_404(AMA, pk=ama_id)
-    return render(request, 'detail.html', {'ama': ama}, context_instance=RequestContext(request))
+    return render(request, 'ama/detail.html', {'ama': ama}, context_instance=RequestContext(request))
 
 # Accounts
 def login(request):
@@ -39,12 +39,12 @@ def login(request):
             else:
                 return HttpResponseRedirect(reverse('index'))
         else:
-            return render(request, 'login.html', {'username': username, 'errors': ['Invalid username or password'], 'next': next_path}, context_instance=RequestContext(request))
+            return render(request, 'account/login.html', {'username': username, 'errors': ['Invalid username or password'], 'next': next_path}, context_instance=RequestContext(request))
     else:
         context = {}
         if next_path:
             context['next'] = next_path
-        return render(request, 'login.html', context, context_instance=RequestContext(request))
+        return render(request, 'account/login.html', context, context_instance=RequestContext(request))
 
 def logout(request):
     auth.logout(request)
@@ -65,9 +65,9 @@ def signup(request):
             auth.login(request, user)
             return HttpResponseRedirect(reverse('index'))
         else:
-            return render(request, 'signup.html', {'errors': form.errors.values() }, context_instance=RequestContext(request))
+            return render(request, 'account/signup.html', {'errors': form.errors.values() }, context_instance=RequestContext(request))
     else:
-        return render(request, 'signup.html', context_instance=RequestContext(request))
+        return render(request, 'account/signup.html', context_instance=RequestContext(request))
 
 # Creation
 @login_required
@@ -81,17 +81,39 @@ def createama(request):
         try:
             ama.clean()
         except ValidationError as errors:
-            return render(request, 'create_ama.html', {'errors': errors}, context_instance=RequestContext(request))
+            return render(request, 'ama/create_ama.html', {'errors': errors}, context_instance=RequestContext(request))
         else:
             ama.save()
             return HttpResponseRedirect(reverse('index'))
     else:
-        return render(request, 'create_ama.html', context_instance=RequestContext(request))
+        return render(request, 'ama/create_ama.html', context_instance=RequestContext(request))
 
-def question(request, ama_id):
-    author = request.user
-    ama = AMA.objects.get(id=int(ama_id))
-    question_text = request.POST.get('question')
-    new_question = Question(author=author, ama=ama, question_text=question_text)
-    new_question.save()
-    return HttpResponseRedirect(reverse('detail', args=(int(ama_id),)))
+def ask_question(request, ama_id):
+    if request.method == 'POST':
+        author = None
+        if request.user.is_authenticated():
+            author = request.user
+        author_name = request.POST.get('author_name')
+        if author_name == 'other':
+            author_name = request.POST.get('other')
+        ama = AMA.objects.get(id=int(ama_id))
+        question_text = request.POST.get('question')
+        new_question = Question(author_name=author_name, ama=ama, question_text=question_text)
+        new_question.save()
+        return HttpResponseRedirect(reverse('ama_detail', args=(int(ama_id),)))
+    else:
+        return HttpResponseRedirect(reverse('ama_detail', args=(int(ama_id),)))
+
+def question(request, ama_id, question_id):
+    if request.method == 'POST':
+        # create answer/comment
+        author = request.user
+        question = Question.objects.get(id=int(question_id))
+        answer_text = request.POST.get('response')
+        answer = Answer(author=author, question=question, answer_text=answer_text)
+        answer.save()
+        return HttpResponseRedirect(reverse('question_detail', args=(int(ama_id), int(question_id),)))
+    else:
+        ama = get_object_or_404(AMA, pk=ama_id)
+        question = get_object_or_404(Question, pk=question_id)
+        return render(request, 'ama/question.html', {'question': question, 'ama': ama}, context_instance=RequestContext(request))

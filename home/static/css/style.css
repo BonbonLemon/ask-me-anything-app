@@ -1,9 +1,15 @@
 body {
-  padding: 50px;
+  padding: 40px;
+  padding-top: 60px;
 }
 
 li {
   list-style: none;
+}
+
+label {
+  display: block;
+  white-space: nowrap;
 }
 
 .errors{
@@ -24,16 +30,9 @@ li {
 }
 
 .right-side {
-  float: right;
-  width: 300px;
-  min-height: 100%;
   text-align: center;
   border-left: thin solid #f3f3f3;
   padding-top: 30px;
-}
-
-.right-side button {
-  /*margin: 0 auto;*/
 }
 
 textarea.question {
@@ -41,9 +40,27 @@ textarea.question {
   height: 100px;
 }
 
-.question-form {
+.speech-form {
   width: 600px;
   background-color: cornsilk;
   padding: 15px;
   border: thin solid #f3f3f3;
+}
+
+.question {
+  border-bottom: thin solid #999999;
+  padding-bottom: 20px;
+}
+
+.question-author {
+  margin-bottom: 10px;
+}
+
+.questions-list {
+  padding: 0px;
+  padding-top: 20px;
+}
+
+.question-text {
+  padding-bottom: 10px;
 }

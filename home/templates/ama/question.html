@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <a href="{% url 'ama_detail' ama.id %}">&#8592Back to AMA</a>
+
+    <h1>{{ ama.title }}</h1>
+
+    <div class="">
+      <h4>{{ question.question_text|linebreaksbr }}</h4>
+    </div>
+
+    <form class="speech-form" action="{{ request.path }}" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        {% if user == ama.author %}
+        <label for="response">Answer</label>
+        {% else %}
+        <label for="response">Comment</label>
+        {% endif %}
+        <textarea name="response" class="form-control question" rows="1" cols="1"></textarea>
+
+        <input type="submit" value="Save">
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

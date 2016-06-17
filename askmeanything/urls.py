@@ -3,10 +3,12 @@ from django.contrib import admin
 import home.views
 
 urlpatterns = [
-    # General
+    # AMA
     url(r'^$', home.views.index, name='index'),
-    url(r'^ama/(?P<ama_id>[0-9]+)/$', home.views.detail, name='detail'),
-    url(r'^ama/(?P<ama_id>[0-9]+)/question/$', home.views.question, name='question'),
+    url(r'^ama/(?P<ama_id>[0-9]+)/$', home.views.detail, name='ama_detail'),
+    url(r'^ama/(?P<ama_id>[0-9]+)/question/$', home.views.ask_question, name='question'),
+    url(r'^ama/(?P<ama_id>[0-9]+)/question/(?P<question_id>[0-9]+)/$', home.views.question, name='question_detail'),
+    url(r'^ama/create/$', home.views.createama, name='createama'),
 
     # Accounts
     url(r'^login/$', home.views.login, name='login'),
@@ -14,7 +16,6 @@ urlpatterns = [
     url(r'^signup/$', home.views.signup, name='signup'),
 
     # Creation
-    url(r'^create/$', home.views.createama, name='createama'),
 
     url(r'^admin/', admin.site.urls),
 ]

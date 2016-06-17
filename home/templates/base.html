@@ -16,14 +16,15 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" type="text/css" href="./../../static/css/style.css">
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
-
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed"
+          <button type="button"
+                  class="navbar-toggle collapsed"
                   data-toggle="collapse"
                   data-target="#collapse-menu"
                   aria-expanded="false">
@@ -45,7 +46,6 @@
             {% endif %}
           </ul>
         </div>
-
       </div>
     </nav>
 

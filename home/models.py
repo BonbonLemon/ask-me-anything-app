@@ -17,12 +17,13 @@ class AMA(models.Model):
 
 
 class Question(models.Model):
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, null=True, blank=True)
+    author_name = models.CharField(max_length=25, default='Anonymous')
     ama = models.ForeignKey(AMA, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=400)
     pub_date = models.DateTimeField(default=timezone.now)
     def __str__(self):
-        return self.author.username + "- " + self.question_text[:20]
+        return self.author_name + "- " + self.question_text[:20]
 
 
 class Answer(models.Model):
