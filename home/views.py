@@ -109,9 +109,10 @@ def question(request, ama_id, question_id):
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
         # create answer/comment
+        import pdb; pdb.set_trace()
         author = request.user
         if author == ama.author:
-            if question.answer:
+            if hasattr(question, 'answer'):
                 question = get_object_or_404(Question, pk=question_id)
                 answer = question.answer
                 answer.answer_text = request.POST.get('response')

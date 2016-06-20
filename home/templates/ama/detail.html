@@ -45,26 +45,74 @@
 
     <ul class="questions-list">
       {% for question in ama.question_set.all %}
-      <li class="question">
+      <li class="question" id="question-{{ forloop.counter0 }}">
         <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
         <div class="question-text">{{ question.question_text|linebreaksbr }}</div>
-        {% if question.answer %}
-        <p class="answer">
-          {{ question.answer.answer_text|linebreaksbr }}
-        </p>
-        {% endif %}
 
-        {% if user.is_authenticated %}
-          {% if question.ama.author == user %}
-            {% if question.answer %}
-            <a href="{% url 'question_detail' ama.id question.id %}">Edit Answer</a>
-            {% else %}
-            <a href="{% url 'question_detail' ama.id question.id %}">Answer</a>
-            {% endif %}
+        <div class="answer-box">
+          {% if question.answer %}
+          <p class="answer" id="answer-{{ forloop.counter0 }}">
+            {{ question.answer.answer_text|linebreaksbr }}
+          </p>
           {% else %}
-          <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
+          <p class="answer" id="answer-{{ forloop.counter0 }}" hidden>
+          </p>
           {% endif %}
-        {% endif %}
+
+          {% if user.is_authenticated %}
+            {% if question.ama.author == user %}
+              {% if question.answer %}
+              <a id="answer-button-{{ forloop.counter0 }}" href="{% url 'question_detail' ama.id question.id %}">Edit Answer</a>
+              {% else %}
+              <a id="answer-button-{{ forloop.counter0 }}" href="{% url 'question_detail' ama.id question.id %}">Answer</a>
+              {% endif %}
+
+              <script type="text/javascript">
+                $(document).ready(function () {
+                  $('#answer-button-{{ forloop.counter0 }}').click(function (e) {
+                    e.preventDefault();
+                    e.target.hidden = true;
+                    var $answer = $('#answer-{{ forloop.counter0 }}')[0];
+                    $answer.hidden = true;
+
+                    var form = document.createElement('form');
+                    form.action = "{{ request.path }}question/{{ question.id }}/";
+                    form.method = "POST";
+
+                    var csrf_token = document.createElement('input');
+                    csrf_token.type = "hidden";
+                    csrf_token.name = "csrfmiddlewaretoken";
+                    csrf_token.value = csrftoken;
+
+                    var div = document.createElement('div');
+                    div.className = "form-group";
+
+                    var label = document.createElement('label');
+                    label.innerText = "Answer";
+
+                    var textarea = document.createElement('textarea');
+                    textarea.name = "response";
+                    textarea.innerText = "{{ question.answer.answer_text|addslashes|safe }}";
+
+                    var submit = document.createElement('input');
+                    submit.type = "submit";
+                    submit.value = "Save";
+
+                    div.appendChild(label);
+                    div.appendChild(textarea);
+                    form.appendChild(csrf_token);
+                    form.appendChild(div);
+                    form.appendChild(submit);
+
+                    var question = $('#question-{{ forloop.counter0 }}').append(form);
+                  })
+                })
+              </script>
+            {% else %}
+            <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
+            {% endif %}
+          {% endif %}
+        </div>
 
         <ul>
           <li>
