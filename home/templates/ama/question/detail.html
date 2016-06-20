@@ -13,16 +13,24 @@
 
     <form class="speech-form" action="{{ request.path }}" method="POST">
       {% csrf_token %}
+
       <div class="form-group">
         {% if user == ama.author %}
         <label for="response">Answer</label>
         {% else %}
         <label for="response">Comment</label>
         {% endif %}
+        {% if user == ama.author %}
+        <textarea name="response" class="form-control question" rows="1" cols="1">{{ question.answer.answer_text }}</textarea>
+        {% else %}
         <textarea name="response" class="form-control question" rows="1" cols="1"></textarea>
-
-        <input type="submit" value="Save">
+        {% endif %}
       </div>
+
+      <input type="submit" value="Save">
+      {% if flash %}
+      <b class="flash-success">{{ flash }}</b>
+      {% endif %}
     </form>
   </div>
 </div>

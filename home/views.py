@@ -7,9 +7,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
-from models import AMA, Question, Answer
 
-from .models import AMA, Question, Answer
+from .models import AMA, Comment, Question, Answer
 
 # Viewing
 def index(request):
@@ -19,7 +18,7 @@ def index(request):
 
 def detail(request, ama_id):
     ama = get_object_or_404(AMA, pk=ama_id)
-    return render(request, 'ama/detail.html', {'ama': ama}, context_instance=RequestContext(request))
+    return render(request, 'ama/detail.html', {'ama': ama }, context_instance=RequestContext(request))
 
 # Accounts
 def login(request):
@@ -104,16 +103,28 @@ def ask_question(request, ama_id):
     else:
         return HttpResponseRedirect(reverse('ama_detail', args=(int(ama_id),)))
 
+@login_required
 def question(request, ama_id, question_id):
+    ama = get_object_or_404(AMA, pk=ama_id)
+    question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
         # create answer/comment
         author = request.user
-        question = Question.objects.get(id=int(question_id))
-        answer_text = request.POST.get('response')
-        answer = Answer(author=author, question=question, answer_text=answer_text)
-        answer.save()
-        return HttpResponseRedirect(reverse('question_detail', args=(int(ama_id), int(question_id),)))
+        if author == ama.author:
+            if question.answer:
+                question = get_object_or_404(Question, pk=question_id)
+                answer = question.answer
+                answer.answer_text = request.POST.get('response')
+            else:
+                question = Question.objects.get(id=int(question_id))
+                answer_text = request.POST.get('response')
+                answer = Answer(author=author, question=question, answer_text=answer_text)
+            answer.save()
+        else:
+            comment_text = request.POST.get('response')
+            comment = Comment(author=author, comment_text=comment_text, target=question)
+            comment.save()
+        return render(request, 'ama/question/detail.html', {'flash': "Response saved!", 'question': question, 'ama': ama}, context_instance=RequestContext(request))
+        # return HttpResponseRedirect(reverse('question_detail', args=(int(ama_id), int(question_id),)))
     else:
-        ama = get_object_or_404(AMA, pk=ama_id)
-        question = get_object_or_404(Question, pk=question_id)
-        return render(request, 'ama/question.html', {'question': question, 'ama': ama}, context_instance=RequestContext(request))
+        return render(request, 'ama/question/detail.html', {'question': question, 'ama': ama}, context_instance=RequestContext(request))

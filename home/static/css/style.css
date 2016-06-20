@@ -12,17 +12,40 @@ label {
   white-space: nowrap;
 }
 
-.errors{
+.answer {
+  background-color: khaki;
+  padding: 10px;
+}
+
+.flash-errors {
   color: red;
   animation-duration: 1500ms;
-  animation-name: blink;
+  animation-name: blinkred;
   animation-iteration-count: 1;
   animation-direction: normal;
 }
 
-@keyframes blink {
+@keyframes blinkred {
   from {
     background-color: #ff9696;
+  }
+  to {
+    background-color: inherit;
+  }
+}
+
+.flash-success {
+  padding: 0px 50px;
+  color: green;
+  animation-duration: 1500ms;
+  animation-name: blinkgreen;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+}
+
+@keyframes blinkgreen {
+  from {
+    background-color: #00ff00;
   }
   to {
     background-color: inherit;

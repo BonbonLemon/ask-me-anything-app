@@ -48,14 +48,35 @@
       <li class="question">
         <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
         <div class="question-text">{{ question.question_text|linebreaksbr }}</div>
-        {% if question.ama.author == user %}
-        <a href="{% url 'question_detail' ama.id question.id %}">Answer</a>
-        {% elif user.is_authenticated %}
-        <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
+        {% if question.answer %}
+        <p class="answer">
+          {{ question.answer.answer_text|linebreaksbr }}
+        </p>
         {% endif %}
+
+        {% if user.is_authenticated %}
+          {% if question.ama.author == user %}
+            {% if question.answer %}
+            <a href="{% url 'question_detail' ama.id question.id %}">Edit Answer</a>
+            {% else %}
+            <a href="{% url 'question_detail' ama.id question.id %}">Answer</a>
+            {% endif %}
+          {% else %}
+          <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
+          {% endif %}
+        {% endif %}
+
+        <ul>
+          <li>
+            {% for comment in question.comments.all %}
+            <span>{{ comment.comment_text|linebreaksbr }}</span>
+            {% endfor %}
+          </li>
+        </ul>
       </li>
       {% endfor %}
     </ul>
+
   </div>
 </div>
 {% endblock %}
