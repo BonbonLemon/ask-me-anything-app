@@ -103,10 +103,14 @@
                     form.appendChild(csrf_token);
                     form.appendChild(div);
                     form.appendChild(submit);
+                    $('#question-{{ forloop.counter0 }}').append(form);
 
-                    var question = $('#question-{{ forloop.counter0 }}').append(form);
-                  })
-                })
+                    var $f = $(form);
+                    $f.ajaxForm(function () {
+                      alert("Submitted!")
+                    });
+                  });
+                });
               </script>
             {% else %}
             <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
@@ -115,11 +119,11 @@
         </div>
 
         <ul>
+          {% for comment in question.comments.all %}
           <li>
-            {% for comment in question.comments.all %}
-            <span>{{ comment.comment_text|linebreaksbr }}</span>
-            {% endfor %}
+            {% include "comment/detail.html" %}
           </li>
+          {% endfor %}
         </ul>
       </li>
       {% endfor %}

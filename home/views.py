@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 
@@ -109,7 +109,6 @@ def question(request, ama_id, question_id):
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
         # create answer/comment
-        import pdb; pdb.set_trace()
         author = request.user
         if author == ama.author:
             if hasattr(question, 'answer'):
@@ -125,7 +124,9 @@ def question(request, ama_id, question_id):
             comment_text = request.POST.get('response')
             comment = Comment(author=author, comment_text=comment_text, target=question)
             comment.save()
-        return render(request, 'ama/question/detail.html', {'flash': "Response saved!", 'question': question, 'ama': ama}, context_instance=RequestContext(request))
-        # return HttpResponseRedirect(reverse('question_detail', args=(int(ama_id), int(question_id),)))
+        # return render(request, 'ama/detail.html', {'ama': ama }, context_instance=RequestContext(request))
+        return HttpResponseRedirect(reverse('ama_detail', args=(int(ama.id),)))
+        # return HttpResponse('OK')
+        # return render(request, 'ama/question/detail.html', {'flash': "Response saved!", 'question': question, 'ama': ama}, context_instance=RequestContext(request))
     else:
         return render(request, 'ama/question/detail.html', {'question': question, 'ama': ama}, context_instance=RequestContext(request))

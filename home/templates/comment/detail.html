@@ -1,0 +1,9 @@
+<span>{{ comment.comment_text|linebreaksbr }}</span>
+
+<ul>
+  {% for comment in comment.comments.all %}
+  <li>
+    {% include "comment/detail.html" %}
+  </li>
+  {% endfor %}
+</ul>
