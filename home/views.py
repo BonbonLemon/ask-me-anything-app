@@ -7,14 +7,20 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
+from django.views.generic import TemplateView
+from django.views.generic.list import ListView
 
 from .models import AMA, Comment, Question, Answer
 
 # Viewing
-def index(request):
-    latest_ama_list = AMA.objects.order_by('-pub_date')[:5]
-    context = { 'latest_ama_list': latest_ama_list, }
-    return render(request, 'ama/index.html', context, context_instance=RequestContext(request))
+class IndexListView(ListView):
+    template_name = 'ama/index.html'
+    model = AMA
+
+# def index(request):
+#     latest_ama_list = AMA.objects.order_by('-pub_date')[:5]
+#     context = { 'latest_ama_list': latest_ama_list, }
+#     return render(request, 'ama/index.html', context, context_instance=RequestContext(request))
 
 def detail(request, ama_id):
     ama = get_object_or_404(AMA, pk=ama_id)
@@ -27,7 +33,6 @@ def login(request):
         next_path = request.GET['next']
 
     if request.method == 'POST':
-        # import pdb; pdb.set_trace()
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         user = auth.authenticate(username=username, password=password)
@@ -74,7 +79,6 @@ def createama(request):
     if request.method == 'POST':
         author = request.user
         title = request.POST.get('title')
-        # import pdb; pdb.set_trace()
         description_text = request.POST.get('description')
         ama = AMA(author=author, title=title, description_text=description_text)
         try:

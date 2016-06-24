@@ -3,9 +3,9 @@
 {% block content %}
 <div class="row">
   <div class="col-xs-7 col-xs-offset-1">
-    {% if latest_ama_list %}
+    {% if object_list %}
     <ul>
-      {% for ama in latest_ama_list %}
+      {% for ama in object_list %}
       <li><a href="{% url 'ama_detail' ama.id %}">{{ ama.title }}</a></li>
       {% endfor %}
     </ul>
