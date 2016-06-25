@@ -8,23 +8,29 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
 from .models import AMA, Comment, Question, Answer
 
 # Viewing
-class IndexListView(ListView):
+class AMAListView(ListView):
     template_name = 'ama/index.html'
     model = AMA
+    paginate_by = 3
 
-# def index(request):
-#     latest_ama_list = AMA.objects.order_by('-pub_date')[:5]
-#     context = { 'latest_ama_list': latest_ama_list, }
-#     return render(request, 'ama/index.html', context, context_instance=RequestContext(request))
+    def get_queryset(self):
+        ordered_list = AMA.objects.order_by('-pub_date')
+        return ordered_list
 
-def detail(request, ama_id):
-    ama = get_object_or_404(AMA, pk=ama_id)
-    return render(request, 'ama/detail.html', {'ama': ama }, context_instance=RequestContext(request))
+    def get_context_data(self, **kwargs):
+        context = super(AMAListView, self).get_context_data(**kwargs)
+        context['range'] = range(context["paginator"].num_pages)
+        return context
+
+class AMADetailView(DetailView):
+    template_name = 'ama/detail.html'
+    model = AMA
 
 # Accounts
 def login(request):

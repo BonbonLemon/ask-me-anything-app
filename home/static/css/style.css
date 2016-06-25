@@ -17,6 +17,27 @@ label {
   padding: 10px;
 }
 
+.ama-link {
+  display: block;
+  border: thin solid #999999;
+  padding: 10px;
+}
+
+.ama-list {
+  display: block;
+  padding: 0px;
+}
+
+.ama-list-item {
+  display: inline-block;
+  width: 100%;
+  font-size: 24px;
+}
+
+.center-align {
+  text-align: center;
+}
+
 .flash-errors {
   color: red;
   animation-duration: 1500ms;
@@ -50,6 +71,10 @@ label {
   to {
     background-color: inherit;
   }
+}
+
+.pagination {
+  text-align:center
 }
 
 .right-side {

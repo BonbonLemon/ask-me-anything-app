@@ -44,7 +44,7 @@
     </form>
 
     <ul class="questions-list">
-      {% for question in ama.question_set.all %}
+      {% for question in ama.question_set.all reversed %}
       <li class="question" id="question-{{ forloop.counter0 }}">
         <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
         <div class="question-text">{{ question.question_text|linebreaksbr }}</div>
@@ -104,11 +104,6 @@
                     form.appendChild(div);
                     form.appendChild(submit);
                     $('#question-{{ forloop.counter0 }}').append(form);
-
-                    var $f = $(form);
-                    $f.ajaxForm(function () {
-                      alert("Submitted!")
-                    });
                   });
                 });
               </script>
