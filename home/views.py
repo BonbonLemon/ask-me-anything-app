@@ -61,6 +61,27 @@ class UserFormView(View):
 
         return render(request, self.template_name, {'errors': form.errors.values() }, context_instance=RequestContext(request))
 
+class SessionFormView(View):
+    form_class = UserForm
+    template_name = 'account/login.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return redirect('index')
+        return render(request, self.template_name, {'username': username, 'errors': ['Invalid username or password']}, context_instance=RequestContext(request))
+
 def vlogin(request):
     next_path = ''
     if request.GET:

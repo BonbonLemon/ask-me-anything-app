@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 import home.views
 
-from home.views import AMAListView, AMADetailView, UserFormView
+from home.views import AMAListView, AMADetailView, UserFormView, SessionFormView
 
 urlpatterns = [
     # AMA
@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^ama/create/$', home.views.createama, name='createama'),
 
     # Accounts
-    url(r'^login/$', home.views.vlogin, name='login'),
+    url(r'^login/$', SessionFormView.as_view(), name='login'),
     url(r'^logout/$', home.views.vlogout, name='logout'),
     url(r'^signup/$', UserFormView.as_view(), name='signup'),
 
