@@ -1,17 +1,19 @@
-from django.contrib import auth
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 
 from .models import AMA, Comment, Question, Answer
+from .forms import UserForm
 
 # Viewing
 class AMAListView(ListView):
@@ -33,7 +35,33 @@ class AMADetailView(DetailView):
     model = AMA
 
 # Accounts
-def login(request):
+class UserFormView(View):
+    form_class = UserForm
+    template_name = 'account/signup.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user.set_password(password)
+            user.save()
+
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return redirect('index')
+
+        return render(request, self.template_name, {'errors': form.errors.values() }, context_instance=RequestContext(request))
+
+def vlogin(request):
     next_path = ''
     if request.GET:
         next_path = request.GET['next']
@@ -41,9 +69,9 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        user = auth.authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)
         if user is not None:
-            auth.login(request, user)
+            login(request, user)
             if next_path:
                 return HttpResponseRedirect(next_path)
             else:
@@ -56,30 +84,16 @@ def login(request):
             context['next'] = next_path
         return render(request, 'account/login.html', context, context_instance=RequestContext(request))
 
-def logout(request):
-    auth.logout(request)
+def vlogout(request):
+    logout(request)
     return HttpResponseRedirect(reverse('login'))
 
-def signup(request):
-    if request.method == 'POST':
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        form = UserCreationForm({
-            'username': username,
-            'password1': password,
-            'password2': password
-        })
-        if form.is_valid():
-            form.save()
-            user = auth.authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
-            auth.login(request, user)
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            return render(request, 'account/signup.html', {'errors': form.errors.values() }, context_instance=RequestContext(request))
-    else:
-        return render(request, 'account/signup.html', context_instance=RequestContext(request))
-
 # Creation
+# class AMACreateView(CreateView):
+#     model = AMA
+#     template_name = "ama/create_ama.html"
+#     fields = ['title', 'description_text']
+
 @login_required
 def createama(request):
     if request.method == 'POST':
