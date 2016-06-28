@@ -8,7 +8,7 @@
     {% if next %}
     <form action="{{ request.path }}?next={{ next }}" method="POST">
     {% else %}
-    <form action="{{ request.path }}" method="POST">
+    <form action="" method="POST">
     {% endif %}
       {% csrf_token %}
       <div class="form-group">

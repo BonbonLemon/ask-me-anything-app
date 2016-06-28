@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
 from django.views.generic import TemplateView, View
+from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -45,7 +46,6 @@ class UserFormView(View):
 
     def post(self, request):
         form = self.form_class(request.POST)
-
         if form.is_valid():
             user = form.save(commit=False)
             username = form.cleaned_data['username']
@@ -62,7 +62,7 @@ class UserFormView(View):
         return render(request, self.template_name, {'errors': form.errors.values() }, context_instance=RequestContext(request))
 
 class SessionFormView(View):
-    form_class = UserForm
+    form_class = AuthenticationForm
     template_name = 'account/login.html'
 
     def get(self, request):
@@ -70,7 +70,7 @@ class SessionFormView(View):
         return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
 
     def post(self, request):
-        form = self.form_class(request.POST)
+        form = self.form_class(request, request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -80,7 +80,14 @@ class SessionFormView(View):
                 if user.is_active:
                     login(request, user)
                     return redirect('index')
-        return render(request, self.template_name, {'username': username, 'errors': ['Invalid username or password']}, context_instance=RequestContext(request))
+        return render(request, self.template_name, {'errors': form.errors.values()}, context_instance=RequestContext(request))
+
+class LogoutView(RedirectView):
+    url = reverse_lazy('login')
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return super(LogoutView, self).get(request, *args, **kwargs)
 
 def vlogin(request):
     next_path = ''
@@ -104,10 +111,6 @@ def vlogin(request):
         if next_path:
             context['next'] = next_path
         return render(request, 'account/login.html', context, context_instance=RequestContext(request))
-
-def vlogout(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('login'))
 
 # Creation
 # class AMACreateView(CreateView):
