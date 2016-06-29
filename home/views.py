@@ -59,7 +59,7 @@ class UserFormView(View):
                     login(request, user)
                     return redirect('index')
 
-        return render(request, self.template_name, {'errors': form.errors.values() }, context_instance=RequestContext(request))
+        return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
 
 class SessionFormView(View):
     form_class = AuthenticationForm
@@ -80,7 +80,7 @@ class SessionFormView(View):
                 if user.is_active:
                     login(request, user)
                     return redirect('index')
-        return render(request, self.template_name, {'errors': form.errors.values()}, context_instance=RequestContext(request))
+        return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
 
 class LogoutView(RedirectView):
     url = reverse_lazy('login')
