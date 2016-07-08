@@ -14,7 +14,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 
 from .models import AMA, Comment, Question, Answer
-from .forms import UserForm
+from .forms import UserForm, AMAForm
 
 # Viewing
 class AMAListView(ListView):
@@ -89,51 +89,16 @@ class LogoutView(RedirectView):
         logout(request)
         return super(LogoutView, self).get(request, *args, **kwargs)
 
-def vlogin(request):
-    next_path = ''
-    if request.GET:
-        next_path = request.GET['next']
-
-    if request.method == 'POST':
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if next_path:
-                return HttpResponseRedirect(next_path)
-            else:
-                return HttpResponseRedirect(reverse('index'))
-        else:
-            return render(request, 'account/login.html', {'username': username, 'errors': ['Invalid username or password'], 'next': next_path}, context_instance=RequestContext(request))
-    else:
-        context = {}
-        if next_path:
-            context['next'] = next_path
-        return render(request, 'account/login.html', context, context_instance=RequestContext(request))
-
 # Creation
-# class AMACreateView(CreateView):
-#     model = AMA
-#     template_name = "ama/create_ama.html"
-#     fields = ['title', 'description_text']
+class AMACreateView(CreateView):
+    model = AMA
+    template_name = "ama/create_ama.html"
+    form_class = AMAForm
 
-@login_required
-def createama(request):
-    if request.method == 'POST':
-        author = request.user
-        title = request.POST.get('title')
-        description_text = request.POST.get('description')
-        ama = AMA(author=author, title=title, description_text=description_text)
-        try:
-            ama.clean()
-        except ValidationError as errors:
-            return render(request, 'ama/create_ama.html', {'errors': errors}, context_instance=RequestContext(request))
-        else:
-            ama.save()
-            return HttpResponseRedirect(reverse('index'))
-    else:
-        return render(request, 'ama/create_ama.html', context_instance=RequestContext(request))
+    def get_form(self, form_class):
+        form = super(AMACreateView, self).get_form(form_class)
+        form.instance.author = self.request.user
+        return form
 
 def ask_question(request, ama_id):
     if request.method == 'POST':
@@ -144,8 +109,8 @@ def ask_question(request, ama_id):
         if author_name == 'other':
             author_name = request.POST.get('other')
         ama = AMA.objects.get(id=int(ama_id))
-        question_text = request.POST.get('question')
-        new_question = Question(author_name=author_name, ama=ama, question_text=question_text)
+        question = request.POST.get('question')
+        new_question = Question(author_name=author_name, ama=ama, question=question)
         new_question.save()
         return HttpResponseRedirect(reverse('ama_detail', args=(int(ama_id),)))
     else:
@@ -162,15 +127,15 @@ def question(request, ama_id, question_id):
             if hasattr(question, 'answer'):
                 question = get_object_or_404(Question, pk=question_id)
                 answer = question.answer
-                answer.answer_text = request.POST.get('response')
+                answer.answer = request.POST.get('response')
             else:
                 question = Question.objects.get(id=int(question_id))
-                answer_text = request.POST.get('response')
-                answer = Answer(author=author, question=question, answer_text=answer_text)
+                answer = request.POST.get('response')
+                answer = Answer(author=author, question=question, answer=answer)
             answer.save()
         else:
-            comment_text = request.POST.get('response')
-            comment = Comment(author=author, comment_text=comment_text, target=question)
+            comment = request.POST.get('response')
+            comment = Comment(author=author, comment=comment, target=question)
             comment.save()
         # return render(request, 'ama/detail.html', {'ama': ama }, context_instance=RequestContext(request))
         return HttpResponseRedirect(reverse('ama_detail', args=(int(ama.id),)))

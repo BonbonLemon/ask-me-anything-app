@@ -11,27 +11,12 @@
     <form action="" method="POST">
     {% endif %}
       {% csrf_token %}
-      {% for field in form %}
-      <div class="form-group">
-        <div class="row">
-          <div class="col-xs-offset-1 col-xs-11">
-            <span class="flash-errors">{{ field.errors|striptags }}</span>
-          </div>
-        </div>
-        <div class="row">
-          <label class="col-xs-1">{{ field.label_tag }}</label>
-          <div class="col-xs-11">{{ field }}</div>
-        </div>
-      </div>
-      {% endfor %}
+      {% include 'form_template.html' %}
 
-      <div class="row">
-        <div class="col-xs-offset-1 col-xs-11">
-          {% block submit %}{% endblock %}
-        </div>
+      <div class="form-group">
+        {% block submit %}{% endblock %}
       </div>
     </form>
-
   </div>
 </div>
 <br/>

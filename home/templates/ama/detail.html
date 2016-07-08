@@ -7,7 +7,7 @@
 
     <h1>{{ ama.title }}</h1>
     <p class="">
-      {{ ama.description_text|linebreaksbr }}
+      {{ ama.description|linebreaksbr }}
     </p>
 
     <form class="speech-form" action="{{ request.path }}question/" method="POST">
@@ -47,12 +47,12 @@
       {% for question in ama.question_set.all reversed %}
       <li class="question" id="question-{{ forloop.counter0 }}">
         <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
-        <div class="question-text">{{ question.question_text|linebreaksbr }}</div>
+        <div class="question-text">{{ question.question|linebreaksbr }}</div>
 
         <div class="answer-box">
           {% if question.answer %}
           <p class="answer" id="answer-{{ forloop.counter0 }}">
-            {{ question.answer.answer_text|linebreaksbr }}
+            {{ question.answer.answer|linebreaksbr }}
           </p>
           {% else %}
           <p class="answer" id="answer-{{ forloop.counter0 }}" hidden>
@@ -92,7 +92,7 @@
 
                     var textarea = document.createElement('textarea');
                     textarea.name = "response";
-                    textarea.innerText = "{{ question.answer.answer_text|addslashes|safe }}";
+                    textarea.innerText = "{{ question.answer.answer|addslashes|safe }}";
 
                     var submit = document.createElement('input');
                     submit.type = "submit";

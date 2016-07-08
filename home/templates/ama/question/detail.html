@@ -8,7 +8,7 @@
     <h1>{{ ama.title }}</h1>
 
     <div class="">
-      <h4>{{ question.question_text|linebreaksbr }}</h4>
+      <h4>{{ question.question|linebreaksbr }}</h4>
     </div>
 
     <form class="speech-form" action="{{ request.path }}" method="POST">
@@ -21,7 +21,7 @@
         <label for="response">Comment</label>
         {% endif %}
         {% if user == ama.author %}
-        <textarea name="response" class="form-control question" rows="1" cols="1">{{ question.answer.answer_text }}</textarea>
+        <textarea name="response" class="form-control question" rows="1" cols="1">{{ question.answer.answer }}</textarea>
         {% else %}
         <textarea name="response" class="form-control question" rows="1" cols="1"></textarea>
         {% endif %}
