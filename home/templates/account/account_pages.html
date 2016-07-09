@@ -13,27 +13,26 @@
       {% csrf_token %}
       {% for field in form %}
       <div class="form-group">
-        <div class="col-xs-offset-1 col-xs-11">
-          <span class="flash-errors">{{ field.errors|striptags }}</span>
+        <div class="row">
+          <div class="col-xs-offset-1 col-xs-11">
+            <span class="flash-errors">{{ field.errors|striptags }}</span>
+          </div>
         </div>
-        <label class="col-xs-1">{{ field.label_tag }}</label>
-        <div class="col-xs-11">{{ field }}</div>
+        <div class="row">
+          <label class="col-xs-1">{{ field.label_tag }}</label>
+          <div class="col-xs-11">{{ field }}</div>
+        </div>
       </div>
       {% endfor %}
 
-      <div class="col-xs-offset-1 col-xs-11">
-        {% block submit %}{% endblock %}
+      <div class="row">
+        <div class="col-xs-offset-1 col-xs-11">
+          {% block submit %}{% endblock %}
+        </div>
       </div>
     </form>
 
   </div>
 </div>
 <br/>
-<!-- <div class="row">
-  <ul class="col-xs-11 col-xs-offset-1">
-    {% for error in errors %}
-    <li class="flash-errors">{{ error|striptags }}</li>
-    {% endfor %}
-  </ul>
-</div> -->
 {% endblock %}
