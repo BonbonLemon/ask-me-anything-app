@@ -13,8 +13,9 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 
+from .mixins import AuthRequiredMixin
 from .models import AMA, Comment, Question, Answer
-from .forms import UserForm, AMAForm
+from .forms import UserForm, AMAForm, QuestionForm
 
 # Viewing
 class AMAListView(ListView):
@@ -79,7 +80,10 @@ class SessionFormView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('index')
+                    next_path = 'index'
+                    if request.GET:
+                        next_path = request.GET['next']
+                    return redirect(next_path)
         return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
 
 class LogoutView(RedirectView):
@@ -90,7 +94,7 @@ class LogoutView(RedirectView):
         return super(LogoutView, self).get(request, *args, **kwargs)
 
 # Creation
-class AMACreateView(CreateView):
+class AMACreateView(AuthRequiredMixin, CreateView):
     model = AMA
     template_name = "ama/create_ama.html"
     form_class = AMAForm
@@ -99,6 +103,20 @@ class AMACreateView(CreateView):
         form = super(AMACreateView, self).get_form(form_class)
         form.instance.author = self.request.user
         return form
+
+class QuestionCreateView(AuthRequiredMixin, CreateView):
+    model = Question
+    form_class = QuestionForm
+
+    def get_form(self, form_class):
+        form = super(QuestionCreateView, self).get_form(form_class)
+        form.instance.author = self.request.user
+        import pdb; pdb.set_trace()
+        if self.request.author_name == 'other':
+            author_name = request.POST.get('other')
+        else:
+            author_name = self.request.user.username
+
 
 def ask_question(request, ama_id):
     if request.method == 'POST':

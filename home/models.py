@@ -50,6 +50,9 @@ class Question(models.Model):
     def __str__(self):
         return self.author_name + "- " + self.question[:20]
 
+    def get_absolute_url(self):
+        return reverse('ama_detail', kwargs={'pk': self.ama.id})
+
 
 class Answer(models.Model):
     author = models.ForeignKey(User)
