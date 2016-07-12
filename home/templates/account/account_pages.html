@@ -11,7 +11,6 @@
     <form action="" method="POST">
     {% endif %} -->
     <form method="POST">
-    <!-- <form action="{{ request.path }}?next={{ next }}" method="POST"> -->
       {% csrf_token %}
       {% include 'form_template.html' %}
 

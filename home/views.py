@@ -10,7 +10,7 @@ from django.template import RequestContext
 from django.views.generic import TemplateView, View
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
 from django.views.generic.list import ListView
 
 from .mixins import AuthRequiredMixin
@@ -62,29 +62,36 @@ class UserFormView(View):
 
         return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
 
-class SessionFormView(View):
-    form_class = AuthenticationForm
+class SessionFormView(FormView):
     template_name = 'account/login.html'
+    form_class = AuthenticationForm
+    success_url = 'index'
 
-    def get(self, request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
-
-    def post(self, request):
-        form = self.form_class(request, request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    next_path = 'index'
-                    if request.GET:
-                        next_path = request.GET['next']
-                    return redirect(next_path)
-        return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
+    def form_valid(self, form):
+        login(self.request, form.get_user())
+        if self.request.GET:
+            self.success_url = self.request.GET['next']
+        return redirect(self.success_url)
+    #
+    # def get(self, request):
+    #     form = self.form_class(None)
+    #     return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
+    #
+    # def post(self, request):
+    #     form = self.form_class(request, request.POST)
+    #     if form.is_valid():
+    #         username = form.cleaned_data['username']
+    #         password = form.cleaned_data['password']
+    #         user = authenticate(username=username, password=password)
+    #
+    #         if user is not None:
+    #             if user.is_active:
+    #                 login(request, user)
+    #                 next_path = 'index'
+    #                 if request.GET:
+    #                     next_path = request.GET['next']
+    #                 return redirect(next_path)
+    #     return render(request, self.template_name, {'form': form}, context_instance=RequestContext(request))
 
 class LogoutView(RedirectView):
     url = reverse_lazy('login')
@@ -99,23 +106,23 @@ class AMACreateView(AuthRequiredMixin, CreateView):
     template_name = "ama/create_ama.html"
     form_class = AMAForm
 
-    def get_form(self, form_class):
-        form = super(AMACreateView, self).get_form(form_class)
+    def get_form(self):
+        form = super(AMACreateView, self).get_form(self.form_class)
         form.instance.author = self.request.user
         return form
 
-class QuestionCreateView(AuthRequiredMixin, CreateView):
-    model = Question
-    form_class = QuestionForm
-
-    def get_form(self, form_class):
-        form = super(QuestionCreateView, self).get_form(form_class)
-        form.instance.author = self.request.user
-        import pdb; pdb.set_trace()
-        if self.request.author_name == 'other':
-            author_name = request.POST.get('other')
-        else:
-            author_name = self.request.user.username
+# class QuestionCreateView(AuthRequiredMixin, CreateView):
+#     model = Question
+#     form_class = QuestionForm
+#
+#     def get_form(self, form_class):
+#         form = super(QuestionCreateView, self).get_form(form_class)
+#         form.instance.author = self.request.user
+#         import pdb; pdb.set_trace()
+#         if self.request.author_name == 'other':
+#             author_name = request.POST.get('other')
+#         else:
+#             author_name = self.request.user.username
 
 
 def ask_question(request, ama_id):
