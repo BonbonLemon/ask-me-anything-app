@@ -3,7 +3,7 @@ from rest_framework import serializers
 from home.models import AMA
 
 
-class AMACreateSerializer(serializers.ModelSerializer):
+class AMACreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AMA

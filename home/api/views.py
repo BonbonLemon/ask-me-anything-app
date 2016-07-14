@@ -4,6 +4,7 @@ from rest_framework.generics import (
     RetrieveAPIView,
     DestroyAPIView,
     UpdateAPIView,
+    RetrieveUpdateAPIView,
     )
 from rest_framework.permissions import (
     AllowAny,
@@ -13,8 +14,10 @@ from rest_framework.permissions import (
     )
 
 from home.models import AMA
+
+from .permissions import IsOwnerOrReadOnly
 from .serializers import (
-    AMACreateSerializer,
+    AMACreateUpdateSerializer,
     AMADetailSerializer,
     AMASerializer,
     )
@@ -22,7 +25,7 @@ from .serializers import (
 
 class AMACreateAPIView(CreateAPIView):
     queryset = AMA.objects.all()
-    serializer_class = AMACreateSerializer
+    serializer_class = AMACreateUpdateSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -43,6 +46,7 @@ class AMAListAPIView(ListAPIView):
     serializer_class = AMASerializer
 
 
-class AMAUpdateAPIView(UpdateAPIView):
+class AMAUpdateAPIView(RetrieveUpdateAPIView):
     queryset = AMA.objects.all()
-    serializer_class = AMADetailSerializer
+    serializer_class = AMACreateUpdateSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
