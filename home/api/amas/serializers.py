@@ -16,8 +16,8 @@ class AMASerializer(serializers.ModelSerializer):
             'pub_date',
         ]
 
-        def get_author(self, obj):
-            return obj.author.username
+    def get_author(self, obj):
+        return obj.author.username
 
 
 class AMACreateUpdateSerializer(serializers.ModelSerializer):
