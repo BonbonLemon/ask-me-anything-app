@@ -31,6 +31,7 @@ class AMACreateAPIView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+
 class AMADeleteAPIView(DestroyAPIView):
     queryset = AMA.objects.all()
     serializer_class = AMADetailSerializer
@@ -38,7 +39,7 @@ class AMADeleteAPIView(DestroyAPIView):
 
 class AMADetailAPIView(RetrieveAPIView):
     queryset = AMA.objects.all()
-    serializer_class = AMASerializer
+    serializer_class = AMADetailSerializer
 
 
 class AMAListAPIView(ListAPIView):

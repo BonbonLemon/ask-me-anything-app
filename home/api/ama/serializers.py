@@ -14,6 +14,7 @@ class AMACreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class AMASerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = AMA
@@ -24,8 +25,12 @@ class AMASerializer(serializers.ModelSerializer):
             'description',
             'pub_date',
         ]
+
+    def get_author(self, obj):
+        return obj.author.username
 
 class AMADetailSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = AMA
@@ -36,3 +41,6 @@ class AMADetailSerializer(serializers.ModelSerializer):
             'description',
             'pub_date',
         ]
+
+    def get_author(self, obj):
+        return obj.author.username

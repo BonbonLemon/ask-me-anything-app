@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from home.api.views import (
+from home.api.ama.views import (
     AMACreateAPIView,
     AMAListAPIView,
     AMADetailAPIView,

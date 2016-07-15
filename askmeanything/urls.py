@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^ama/(?P<ama_id>[0-9]+)/question/(?P<question_id>[0-9]+)/$', home.views.question, name='question_detail'),
 
     # API
-    url(r'^api/', include("home.api.urls", namespace='apis')),
+    url(r'^api/', include("home.api.ama.urls", namespace='apis')),
 
     # Questions
     # url(r'questions/', home.views.QuestionList.as_view()),
