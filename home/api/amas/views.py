@@ -19,7 +19,7 @@ from .permissions import IsOwnerOrReadOnly
 from .serializers import (
     AMACreateUpdateSerializer,
     AMADetailSerializer,
-    AMASerializer,
+    AMAListSerializer,
     )
 
 
@@ -44,7 +44,7 @@ class AMADetailAPIView(RetrieveAPIView):
 
 class AMAListAPIView(ListAPIView):
     queryset = AMA.objects.all()
-    serializer_class = AMASerializer
+    serializer_class = AMAListSerializer
 
 
 class AMAUpdateAPIView(RetrieveUpdateAPIView):

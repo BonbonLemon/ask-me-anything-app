@@ -1,24 +1,22 @@
 from rest_framework import serializers
 
-from home.models import Question
+from home.models import Comment
 
 
-class QuestionListSerializer(serializers.ModelSerializer):
+class CommentListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='questions-api:detail',
+        view_name='comments-api:detail',
     )
     # delete_url = serializers.HyperlinkedIdentityField(
-    #     view_name='questions-api:delete',
+    #     view_name='comments-api:delete',
     # )
 
     class Meta:
-        model = Question
+        model = Comment
         fields = [
             'url',
             'author',
-            'author_name',
-            'ama',
-            'question',
+            'comment',
             # 'delete_url',
             'pub_date'
         ]

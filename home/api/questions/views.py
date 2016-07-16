@@ -17,7 +17,7 @@ from home.models import Question
 
 from home.api.amas.permissions import IsOwnerOrReadOnly
 from .serializers import (
-    QuestionSerializer
+    QuestionListSerializer
     )
 
 
@@ -37,12 +37,12 @@ from .serializers import (
 
 class QuestionDetailAPIView(RetrieveAPIView):
     queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+    serializer_class = QuestionListSerializer
 
 
 class QuestionListAPIView(ListAPIView):
     queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+    serializer_class = QuestionListSerializer
 
 
 # class QuestionUpdateAPIView(RetrieveUpdateAPIView):

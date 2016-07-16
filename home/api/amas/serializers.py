@@ -3,16 +3,23 @@ from rest_framework import serializers
 from home.models import AMA
 
 
-class AMASerializer(serializers.ModelSerializer):
+class AMAListSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='amas-api:detail',
+    )
+    delete_url = serializers.HyperlinkedIdentityField(
+        view_name='amas-api:delete',
+    )
 
     class Meta:
         model = AMA
         fields = [
-            'id',
+            'url',
             'author',
             'title',
             'description',
+            'delete_url',
             'pub_date',
         ]
 

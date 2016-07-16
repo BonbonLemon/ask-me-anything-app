@@ -16,6 +16,7 @@ urlpatterns = [
 
     # API
     url(r'^api/amas/', include("home.api.amas.urls", namespace='amas-api')),
+    url(r'^api/comments/', include("home.api.comments.urls", namespace='comments-api')),
     url(r'^api/questions/', include("home.api.questions.urls", namespace='questions-api')),
 
     # Questions
