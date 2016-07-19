@@ -23,6 +23,9 @@ class AMA(models.Model):
         if self.title == '':
             raise ValidationError('Title field can not be empty')
 
+    def questions(self):
+        return Question.objects.filter(ama=self)
+
 
 class Comment(models.Model):
     author = models.ForeignKey(User)

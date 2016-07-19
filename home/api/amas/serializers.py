@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from home.models import AMA
+from home.models import AMA, Question
 
 
 class AMAListSerializer(serializers.ModelSerializer):
@@ -11,6 +11,7 @@ class AMAListSerializer(serializers.ModelSerializer):
     delete_url = serializers.HyperlinkedIdentityField(
         view_name='amas-api:delete',
     )
+    question_count = serializers.SerializerMethodField()
 
     class Meta:
         model = AMA
@@ -19,12 +20,16 @@ class AMAListSerializer(serializers.ModelSerializer):
             'author',
             'title',
             'description',
+            'question_count',
             'delete_url',
             'pub_date',
         ]
 
     def get_author(self, obj):
         return obj.author.username
+
+    def get_question_count(self, obj):
+        return obj.questions().count()
 
 
 class AMACreateUpdateSerializer(serializers.ModelSerializer):
@@ -33,11 +38,30 @@ class AMACreateUpdateSerializer(serializers.ModelSerializer):
         model = AMA
         fields = [
             'title',
-            'description'
+            'description',
         ]
+
+class AMAQuestionSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Question
+        fields = [
+            'id',
+            'author',
+            'author_name',
+            'question',
+        ]
+
+    def get_author(self, obj):
+        if obj.author is not None:
+            return obj.author.username
+        return None
+
 
 class AMADetailSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
+    questions = serializers.SerializerMethodField()
 
     class Meta:
         model = AMA
@@ -46,8 +70,12 @@ class AMADetailSerializer(serializers.ModelSerializer):
             'author',
             'title',
             'description',
+            'questions',
             'pub_date',
         ]
 
     def get_author(self, obj):
         return obj.author.username
+
+    def get_questions(self, obj):
+        return AMAQuestionSerializer(obj.questions(), many=True).data
