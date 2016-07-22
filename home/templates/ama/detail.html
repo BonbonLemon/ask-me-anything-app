@@ -2,13 +2,17 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-xs-9">
     <a href="{% url 'index' %}">&#8592Back to index</a>
 
     <h1>{{ ama.title }}</h1>
-    <p class="">
+    {% if ama.description %}
+    <p class="ama-description">
       {{ ama.description|linebreaksbr }}
     </p>
+    {% endif %}
+
+    <h3 class="questions-header">Questions</h3>
 
     <form class="speech-form" action="{{ request.path }}question/" method="POST">
       {% csrf_token %}

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-xs-8">
+  <div class="col-xs-9">
     {% if ama_list %}
     <ul class="ama-list">
       {% for ama in ama_list %}
@@ -38,7 +38,7 @@
     {% endif %}
   </div>
 
-  <div class="right-side col-xs-4">
+  <div class="right-side col-xs-3">
     <h5>
       <a href="{% url 'createama' %}" class="btn btn-primary btn-lg">
         SUBMIT AN AMA

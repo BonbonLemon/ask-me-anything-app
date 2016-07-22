@@ -43,6 +43,10 @@ class AMACreateUpdateSerializer(serializers.ModelSerializer):
 
 class AMAQuestionSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
+    # url = serializers.HyperlinkedIdentityField(
+    #     view_name='questions-api:detail',
+    #     lookup_field='id',
+    # )
 
     class Meta:
         model = Question

@@ -25,7 +25,7 @@ from .forms import UserForm, AMAForm, QuestionForm
 class AMAListView(ListView):
     template_name = 'ama/index.html'
     model = AMA
-    paginate_by = 3
+    paginate_by = 10
 
     def get_queryset(self):
         ordered_list = AMA.objects.order_by('-pub_date')

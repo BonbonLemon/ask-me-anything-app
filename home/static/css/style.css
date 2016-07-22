@@ -1,6 +1,6 @@
 body {
   padding: 40px;
-  padding-top: 60px;
+  padding-top: 80px;
 }
 
 ul {
@@ -21,9 +21,18 @@ label {
   padding: 10px;
 }
 
+.ama-description {
+  background-color: #fafafa;
+  border: thin solid #369;
+  border-radius: 7px;
+  padding: 10px;
+}
+
 .ama-link {
   display: block;
+  height: 70px;
   border: thin solid #999999;
+  /*background-color: #f9ffff;*/
   padding: 10px;
 }
 
@@ -86,8 +95,9 @@ label {
 }
 
 .right-side {
+  height: 700px;
   text-align: center;
-  border-left: thin solid #f3f3f3;
+  border-left: 3px solid #d0d0d0;
   padding-top: 30px;
 }
 
@@ -110,6 +120,13 @@ textarea.question {
 
 .question-author {
   margin-bottom: 10px;
+}
+
+.questions-header {
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: thin dashed black;
+  margin-bottom: 40px;
 }
 
 .questions-list {
