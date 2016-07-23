@@ -32,8 +32,13 @@ label {
   display: block;
   height: 70px;
   border: thin solid #999999;
+  border-top: none;
   /*background-color: #f9ffff;*/
   padding: 10px;
+}
+
+.ama-list-item:first-child > .ama-link {
+  border-top: thin solid #999999;
 }
 
 .ama-link:hover {
@@ -90,14 +95,16 @@ label {
   }
 }
 
+.left-content {
+  border-right: 3px solid #d0d0d0;
+}
+
 .pagination {
   text-align:center
 }
 
-.right-side {
-  height: 700px;
+.right-content {
   text-align: center;
-  border-left: 3px solid #d0d0d0;
   padding-top: 30px;
 }
 
@@ -107,10 +114,10 @@ textarea.question {
 }
 
 .speech-form {
-  width: 600px;
+  width: 575px;
   background-color: cornsilk;
-  padding: 15px;
-  border: thin solid #f3f3f3;
+  padding: 20px 40px 20px 35px;
+  border: thin solid #e0e0e0;
 }
 
 .question {

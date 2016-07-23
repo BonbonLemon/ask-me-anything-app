@@ -1,133 +1,137 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="row">
-  <div class="col-xs-9">
-    <a href="{% url 'index' %}">&#8592Back to index</a>
+{% block left-content %}
+<a href="{% url 'index' %}">&#8592Back to index</a>
 
-    <h1>{{ ama.title }}</h1>
-    {% if ama.description %}
-    <p class="ama-description">
-      {{ ama.description|linebreaksbr }}
-    </p>
-    {% endif %}
+<h1>{{ ama.title }}</h1>
+{% if ama.description %}
+<p class="ama-description">
+  {{ ama.description|linebreaksbr }}
+</p>
+{% endif %}
 
-    <h3 class="questions-header">Questions</h3>
+<h3 class="questions-header">Questions</h3>
 
-    <form class="speech-form" action="{{ request.path }}question/" method="POST">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="question">Ask A Question</label>
-        <textarea name="question" class="form-control question" rows="1" cols="1"></textarea>
+<form class="speech-form" action="{{ request.path }}question/" method="POST">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="question">Ask A Question</label>
+    <textarea name="question" class="form-control question" rows="1" cols="1"></textarea>
+  </div>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-xs-2">
+        <label>Ask as: </label>
       </div>
-
-      <div class="form-group">
-        <div class="row">
-          <div class="col-xs-2">
-            <label>Ask as: </label>
-          </div>
-          <div class="col-xs-10">
-            {% if user.username %}
-            <label for="username">
-              <input type="radio" name="author_name" id="username" value="{{ user.username }}" checked />
-              {{ user.username }}
-            </label>
-            <label for="anonymous">
-              <input type="radio" name="author_name" id="anonymous" value="other">
-                Other: <input type="text" name="other" value='Anonymous' />
-              </input>
-            </label>
-            {% else %}
-            <input type="text" name="author_name">
-            {% endif %}
-          </div>
-        </div>
+      <div class="col-xs-10">
+        {% if user.username %}
+        <label for="username">
+          <input type="radio" name="author_name" id="username" value="{{ user.username }}" checked />
+          {{ user.username }}
+        </label>
+        <label for="anonymous">
+          <input type="radio" name="author_name" id="anonymous" value="other">
+            Other: <input type="text" name="other" value='Anonymous' />
+          </input>
+        </label>
+        {% else %}
+        <input type="text" name="author_name">
+        {% endif %}
       </div>
+    </div>
+  </div>
 
-      <input type="submit" value="Submit">
-    </form>
+  <input type="submit" value="Submit">
+</form>
 
-    <ul class="questions-list">
-      {% for question in ama.question_set.all reversed %}
-      <li class="question" id="question-{{ forloop.counter0 }}">
-        <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
-        <div class="question-text">{{ question.question|linebreaksbr }}</div>
+<ul class="questions-list">
+  {% for question in ama.question_set.all reversed %}
+  <li class="question" id="question-{{ forloop.counter0 }}">
+    <div class="question-author"><b>{{ question.author_name }}</b> {{ question.pub_date }}</div>
+    <div class="question-text">{{ question.question|linebreaksbr }}</div>
 
-        <div class="answer-box">
+    <div class="answer-box">
+      {% if question.answer %}
+      <p class="answer" id="answer-{{ forloop.counter0 }}">
+        {{ question.answer.answer|linebreaksbr }}
+      </p>
+      {% else %}
+      <p class="answer" id="answer-{{ forloop.counter0 }}" hidden>
+      </p>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        {% if question.ama.author == user %}
           {% if question.answer %}
-          <p class="answer" id="answer-{{ forloop.counter0 }}">
-            {{ question.answer.answer|linebreaksbr }}
-          </p>
+          <a id="answer-button-{{ forloop.counter0 }}" href="{% url 'question_detail' ama.id question.id %}">Edit Answer</a>
           {% else %}
-          <p class="answer" id="answer-{{ forloop.counter0 }}" hidden>
-          </p>
+          <a id="answer-button-{{ forloop.counter0 }}" href="{% url 'question_detail' ama.id question.id %}">Answer</a>
           {% endif %}
 
-          {% if user.is_authenticated %}
-            {% if question.ama.author == user %}
-              {% if question.answer %}
-              <a id="answer-button-{{ forloop.counter0 }}" href="{% url 'question_detail' ama.id question.id %}">Edit Answer</a>
-              {% else %}
-              <a id="answer-button-{{ forloop.counter0 }}" href="{% url 'question_detail' ama.id question.id %}">Answer</a>
-              {% endif %}
+          <script type="text/javascript">
+            $(document).ready(function () {
+              $('#answer-button-{{ forloop.counter0 }}').click(function (e) {
+                e.preventDefault();
+                e.target.hidden = true;
+                var $answer = $('#answer-{{ forloop.counter0 }}')[0];
+                $answer.hidden = true;
 
-              <script type="text/javascript">
-                $(document).ready(function () {
-                  $('#answer-button-{{ forloop.counter0 }}').click(function (e) {
-                    e.preventDefault();
-                    e.target.hidden = true;
-                    var $answer = $('#answer-{{ forloop.counter0 }}')[0];
-                    $answer.hidden = true;
+                var form = document.createElement('form');
+                form.action = "{{ request.path }}question/{{ question.id }}/";
+                form.method = "POST";
 
-                    var form = document.createElement('form');
-                    form.action = "{{ request.path }}question/{{ question.id }}/";
-                    form.method = "POST";
+                var csrf_token = document.createElement('input');
+                csrf_token.type = "hidden";
+                csrf_token.name = "csrfmiddlewaretoken";
+                csrf_token.value = csrftoken;
 
-                    var csrf_token = document.createElement('input');
-                    csrf_token.type = "hidden";
-                    csrf_token.name = "csrfmiddlewaretoken";
-                    csrf_token.value = csrftoken;
+                var div = document.createElement('div');
+                div.className = "form-group";
 
-                    var div = document.createElement('div');
-                    div.className = "form-group";
+                var label = document.createElement('label');
+                label.innerText = "Answer";
 
-                    var label = document.createElement('label');
-                    label.innerText = "Answer";
+                var textarea = document.createElement('textarea');
+                textarea.name = "response";
+                textarea.innerText = "{{ question.answer.answer|addslashes|safe }}";
 
-                    var textarea = document.createElement('textarea');
-                    textarea.name = "response";
-                    textarea.innerText = "{{ question.answer.answer|addslashes|safe }}";
+                var submit = document.createElement('input');
+                submit.type = "submit";
+                submit.value = "Save";
 
-                    var submit = document.createElement('input');
-                    submit.type = "submit";
-                    submit.value = "Save";
+                div.appendChild(label);
+                div.appendChild(textarea);
+                form.appendChild(csrf_token);
+                form.appendChild(div);
+                form.appendChild(submit);
+                $('#question-{{ forloop.counter0 }}').append(form);
+              });
+            });
+          </script>
+        {% else %}
+        <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
+        {% endif %}
+      {% endif %}
+    </div>
 
-                    div.appendChild(label);
-                    div.appendChild(textarea);
-                    form.appendChild(csrf_token);
-                    form.appendChild(div);
-                    form.appendChild(submit);
-                    $('#question-{{ forloop.counter0 }}').append(form);
-                  });
-                });
-              </script>
-            {% else %}
-            <a href="{% url 'question_detail' ama.id question.id %}">Comment</a>
-            {% endif %}
-          {% endif %}
-        </div>
-
-        <ul>
-          {% for comment in question.comments.all %}
-          <li>
-            {% include "comment/detail.html" %}
-          </li>
-          {% endfor %}
-        </ul>
+    <ul>
+      {% for comment in question.comments.all %}
+      <li>
+        {% include "comment/detail.html" %}
       </li>
       {% endfor %}
     </ul>
+  </li>
+  {% endfor %}
+</ul>
 
-  </div>
-</div>
+{% endblock %}
+
+{% block right-content %}
+<h5>
+  <a href="{% url 'createama' %}" class="btn btn-primary btn-lg">
+    SUBMIT AN AMA
+  </a>
+</h5>
 {% endblock %}
